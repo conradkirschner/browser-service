@@ -1,0 +1,22 @@
+{
+  "name": "browser-loadbalancer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/conradkirschner/browser-loadbalancer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/conradkirschner/browser-loadbalancer/issues"
+  },
+  "homepage": "https://github.com/conradkirschner/browser-loadbalancer#readme",
+  "dependencies": {
+    "http-proxy": "^1.18.1"
+  }
+}
