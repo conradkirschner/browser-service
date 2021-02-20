@@ -11,7 +11,9 @@ const loadbalancer = http.createServer(async function (req, res) {
     const route = await router(req, res);
     route.next(route.req, route.res);
 });
-
+const getSessionId = (req) => {
+    return req.url.split('/')[4];
+}
 proxy.on('proxyRes', function (proxyRes, req, res) {
 
     if (req.url === '/wd/hub/session') {
@@ -26,19 +28,19 @@ proxy.on('proxyRes', function (proxyRes, req, res) {
             }
             body = Buffer.concat(body).toString();
             const result = JSON.parse(body);
-            seleniumInstances.push({quota: result.value, exec: req.seleniumServerInstance});
+            seleniumInstances.push({ quota: result.value, exec: req.seleniumServerInstance, port: req.seleniumServerPort });
         });
 
     }
-    const session = sessionCheck(req.url.split('/')[4]);
+    const session = getSession(getSessionId(req));
     if (session ) {
         if (req.url === `/wd/hub/session/${session.quota.sessionId}` && req.method === 'DELETE') {
-            console.info("[SHUTDOWN-SELENIUM]")
+            console.info("[SHUTDOWN-SELENIUM]" , session.port)
         }
     }
 
 });
-const sessionCheck = (sessionId) => {
+const getSession = (sessionId) => {
     if (!sessionId) return null;
     for (let i = 0, len = seleniumInstances.length; i < len; i++ ) {
         const currentInstance = seleniumInstances[i];
@@ -49,23 +51,28 @@ const sessionCheck = (sessionId) => {
     return null;
 }
 const router = async (req,res) => {
+    let port;
     if (req.url === '/wd/hub/session') {
-
-
-        console.info("[START-UP] STARTING SELENIUM")
+        port = Math.floor(Math.random()*1000)
+        console.info("[START-UP] STARTING SELENIUM ON Port:", port)
         const seleniumServerInstance =  await new Promise((resolve, reject) => {
-                seleniumServer.start((error, selenium) => {
+                seleniumServer.start(port, (error, selenium) => {
                     resolve(selenium)
                 });
             })
         req.seleniumServerInstance = seleniumServerInstance;
+        req.seleniumServerPort = port;
     }
-    console.info("[ROUTER] Routing to Selenium Instance")
+    const session = getSession(getSessionId(req));
+    if (session) {
+        port = session.port;
+    }
+    console.info("[ROUTER] Routing to Selenium Instance", port)
 
     return {
         req,
         res,
-        next: (req, res) => proxy.web(req, res, {target: 'http://127.0.0.1:4444'})
+        next: (req, res) => proxy.web(req, res, {target: 'http://127.0.0.1:' + port})
     }
 
 }

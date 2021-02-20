@@ -1,7 +1,7 @@
 const selenium = require('selenium-standalone');
 let seleniumServer = null;
 
-export const start = (callback) => {
+export const start = (port, callback) => {
     selenium.start({
         // check for more recent versions of selenium here:
         // https://selenium-release.storage.googleapis.com/index.html
@@ -32,7 +32,8 @@ export const start = (callback) => {
         },
         progressCb: function(totalLength, progressLength, chunkLength) {
 
-        }
+        },
+        seleniumArgs: ['-port' ,port]
     }, (statusText, selenium) => {
         seleniumServer = selenium;
         callback(statusText, selenium)
