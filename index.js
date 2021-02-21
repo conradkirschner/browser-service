@@ -1,7 +1,5 @@
+import dotenv from 'dotenv/config';
 import {afterInstall, beforeInstall, seleniumStart, sessionCreated, sessionDeleted, sessionRequest} from "./hooks";
-
-require('dotenv').config()
-
 
 if (process.env.INSTALL_DRIVER === 'true') {
     beforeInstall();

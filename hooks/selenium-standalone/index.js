@@ -1,4 +1,4 @@
-const seleniumServer = require('../SeleniumStart')
+const seleniumServer = require('../../SeleniumStart')
 
 export const beforeInstall = ( ) => {
     seleniumServer.install((error) => {if(error){console.error(error)}});

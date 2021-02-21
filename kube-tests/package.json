@@ -20,15 +20,10 @@
   },
   "homepage": "https://github.com/conradkirschner/browser-loadbalancer#readme",
   "dependencies": {
-    "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
-    "esm": "^3.2.25",
-    "http-proxy": "^1.18.1",
-    "kubernetes-client": "^8.3.7",
-    "selenium-standalone": "^6.23.0",
-    "spawn-shell": "^2.1.0",
-    "webdriver-manager": "^12.1.8"
+    "kubernetes-client": "9.0.0"
   },
   "devDependencies": {
+    "js-yaml": "^4.0.0"
   }
 }
