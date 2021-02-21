@@ -1,4 +1,13 @@
-const seleniumServer = require('./SeleniumStart')
+import {afterInstall, beforeInstall, seleniumStart, sessionCreated, sessionDeleted, sessionRequest} from "./hooks";
+
+require('dotenv').config()
+
+
+if (process.env.INSTALL_DRIVER === 'true') {
+    beforeInstall();
+    afterInstall();
+
+}
 const http = require('http'),
     httpProxy = require('http-proxy');
 
@@ -28,6 +37,7 @@ proxy.on('proxyRes', function (proxyRes, req, res) {
             }
             body = Buffer.concat(body).toString();
             const result = JSON.parse(body);
+            sessionCreated(req,res, session);
             seleniumInstances.push({ quota: result.value, exec: req.seleniumServerInstance, port: req.seleniumServerPort });
         });
 
@@ -35,6 +45,7 @@ proxy.on('proxyRes', function (proxyRes, req, res) {
     const session = getSession(getSessionId(req));
     if (session ) {
         if (req.url === `/wd/hub/session/${session.quota.sessionId}` && req.method === 'DELETE') {
+            sessionDeleted(req,res);
             console.info("[SHUTDOWN-SELENIUM]" , session.port)
         }
     }
@@ -50,31 +61,26 @@ const getSession = (sessionId) => {
     }
     return null;
 }
-const router = async (req,res) => {
-    let port;
+const router = async (req, res) => {
+    let seleniumLocation = process.env.LOADBALANCER_HOST;
     if (req.url === '/wd/hub/session') {
-        port = Math.floor(Math.random()*1000)
-        console.info("[START-UP] STARTING SELENIUM ON Port:", port)
-        const seleniumServerInstance =  await new Promise((resolve, reject) => {
-                seleniumServer.start(port, (error, selenium) => {
-                    resolve(selenium)
-                });
-            })
-        req.seleniumServerInstance = seleniumServerInstance;
-        req.seleniumServerPort = port;
+        const result = await seleniumStart(req, res);
+        req = result.req;
+        res = result.res;
+        seleniumLocation =  req.seleniumServerLocation;
     }
     const session = getSession(getSessionId(req));
     if (session) {
-        port = session.port;
+        req.seleniumServerPort = session.port;
     }
-    console.info("[ROUTER] Routing to Selenium Instance", port)
-
+    console.info("[ROUTER] Routing to Selenium Instance", req.seleniumServerPort )
+    sessionRequest(req,res);
     return {
         req,
         res,
-        next: (req, res) => proxy.web(req, res, {target: 'http://127.0.0.1:' + port})
+        next: (req, res) => proxy.web(req, res, {target: `http://${seleniumLocation}:${req.seleniumServerPort }`})
     }
 
 }
-console.log("http://127.0.0.1:3001")
-loadbalancer.listen(3001);
+console.info(`[PORT]  ${process.env.LOADBALANCER_PORT}`)
+loadbalancer.listen( process.env.LOADBALANCER_PORT);

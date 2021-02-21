@@ -42,7 +42,7 @@ export const start = (port, callback) => {
 export const stop = (callback) => {
     seleniumServer.kill('SIGINT');
 }
-const install = (callback) => {
+export const install = (callback) => {
 
     selenium.install({
         // check for more recent versions of selenium here:

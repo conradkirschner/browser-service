@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "spawn-browser.fullname" . }}-test-connection"
+  labels:
+    {{- include "spawn-browser.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "spawn-browser.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

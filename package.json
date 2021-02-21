@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run": "node -r esm index.js"
+    "run": "node -r esm index.js",
+    "build": "docker build . -t selenium-cloud:0.1",
+    "run-docker": "docker run -p 3001:3001 selenium-cloud:0.1",
+    "deploy": "node -r esm index.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +21,7 @@
   "homepage": "https://github.com/conradkirschner/browser-loadbalancer#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "http-proxy": "^1.18.1",
     "selenium-standalone": "^6.23.0",
