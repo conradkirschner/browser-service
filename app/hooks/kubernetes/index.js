@@ -1,3 +1,7 @@
+const k8s = require('@kubernetes/client-node');
+
+const kc = new k8s.KubeConfig();
+kc.loadFromCluster();
 
 export const beforeInstall = ( ) => {
  }

@@ -4,10 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run": "node -r esm index.js",
-    "build": "docker build . -t selenium-cloud:0.1",
-    "run-docker": "docker run -p 3001:3001 selenium-cloud:0.1",
-    "deploy": "node -r esm index.js"
+    "run": "node kubernetes-handler.js"
   },
   "repository": {
     "type": "git",
