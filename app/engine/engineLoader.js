@@ -1,4 +1,4 @@
-import * as InterfaceEngine from "./hooks/interface";
+import * as InterfaceEngine from "./hookInterface";
 const path = require('path');
 
 // Autoload Hooks
@@ -47,13 +47,13 @@ export const selectEngine = () => {
     // Prüfe welche Engine genutzt werden soll
     for (let i = 0, len = engines.length; i < len; i++) {
         if (engines[i] === process.env.SPAWN_ENGINE) {
-            loadedEngine = require(path.join(process.cwd(),process.env.HOOK_PATH, engines[i]));
+            loadedEngine = require( path.join(process.cwd(), process.env.HOOK_PATH, engines[i]) );
             // Prüfe Interface
-            const correctInterfaceImplementation = isValid(InterfaceEngine, loadedEngine);
+            const correctInterfaceImplementation = isValid( InterfaceEngine, loadedEngine );
             if(!correctInterfaceImplementation) {
                 throw new Error("[ENGINE] Look above the warnings and fix them!")
             }
-            console.info(`[ENGINE] Loaded Engine ${ engines[i]} from ${process.env.HOOK_PATH}`);
+            console.info(`[ENGINE] Loaded Engine ${ engines[i] } from ${ process.env.HOOK_PATH }`);
             // Return Engine
             return loadedEngine;
         }
