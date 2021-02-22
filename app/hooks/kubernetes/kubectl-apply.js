@@ -13,7 +13,7 @@ import { promisify } from 'util';
 export async function apply(specPath){
     const kc = new k8s.KubeConfig();
     kc.loadFromCluster();
-    const client = k8s.KubernetesObjectApi.makeApiClient(kc);
+    const client =  kc.makeApiClient(k8s.CoreV1Api);
     const fsReadFileP = promisify(fs.readFile);
     const specString = await fsReadFileP(specPath, 'utf8');
     const specs = yaml.safeLoadAll(specString);
